@@ -43,8 +43,12 @@ class Announcement extends React.PureComponent {
 
 }
 
-const unexpired = (items, now) => items.filter((entry) => new Date(entry.get('expire')).getTime() > now);
 const ONE_DAY = 24 * 60 * 60 * 1000;
+const unexpired = (items, now) => items.filter((entry) => new Date(entry.get('expire')).getTime() > now);
+const validTimeout = (items, now) => {
+  const nextTick =  items.isEmpty() ? ONE_DAY : new Date(items.get(0).get('expire')).getTime() - now;
+  return Math.min(nextTick, ONE_DAY);
+};
 
 export default class Announcements extends React.PureComponent {
 
@@ -62,22 +66,18 @@ export default class Announcements extends React.PureComponent {
   }
 
   updateAnnouncements = (items) => {
-    const validItems = unexpired(items, Date.now());
+    const now = Date.now();
+    const validItems = unexpired(items, now);
     this.setState({ items: validItems });
-    const timeout = validItems.isEmpty() ? ONE_DAY : new Date(validItems.get(0).get('expire')).getTime() - Date.now();
+    const timeout = validTimeout(validItems, now);
     this.timer = setTimeout(this.refresh, timeout);
   };
 
   cancelPolling = () => {
-    if (this.timer !== null) {
-      clearTimeout(this.timer);
-      this.timer = null;
-    }
+    clearTimeout(this.timer);
   };
 
   refresh = () => {
-    this.timer = null;
-
     axios.get('https://mikutter.hachune.net/notification.json?platform=mastodon')
       .then(resp => this.updateAnnouncements(Immutable.fromJS(resp.data) || Immutable.List()))
       .catch(err => console.warn(err));
