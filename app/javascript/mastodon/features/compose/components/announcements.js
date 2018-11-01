@@ -47,7 +47,7 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
 const unexpired = (items, now) => items.filter((entry) => new Date(entry.get('expire')).getTime() > now);
 const validTimeout = (items, now) => {
   const nextTick =  items.isEmpty() ? ONE_DAY : new Date(items.get(0).get('expire')).getTime() - now;
-  return nextTick > ONE_DAY ? ONE_DAY : nextTick;
+  return Math.min(nextTick, ONE_DAY);
 };
 
 export default class Announcements extends React.PureComponent {
