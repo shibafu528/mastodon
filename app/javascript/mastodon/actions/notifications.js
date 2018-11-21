@@ -106,6 +106,7 @@ const noOp = () => {};
 export function expandNotifications({ maxId } = {}, done = noOp) {
   return (dispatch, getState) => {
     const notifications = getState().get('notifications');
+    const isLoadingMore = !!maxId;
 
     if (notifications.get('isLoading')) {
       done();
@@ -121,7 +122,7 @@ export function expandNotifications({ maxId } = {}, done = noOp) {
       params.since_id = notifications.getIn(['items', 0]);
     }
 
-    dispatch(expandNotificationsRequest());
+    dispatch(expandNotificationsRequest(isLoadingMore));
 
     api(getState).get('/api/v1/notifications', { params }).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
@@ -129,34 +130,37 @@ export function expandNotifications({ maxId } = {}, done = noOp) {
       dispatch(importFetchedAccounts(response.data.map(item => item.account)));
       dispatch(importFetchedStatuses(response.data.map(item => item.status).filter(status => !!status)));
 
-      dispatch(expandNotificationsSuccess(response.data, next ? next.uri : null));
+      dispatch(expandNotificationsSuccess(response.data, next ? next.uri : null, isLoadingMore));
       fetchRelatedRelationships(dispatch, response.data);
       done();
     }).catch(error => {
-      dispatch(expandNotificationsFail(error));
+      dispatch(expandNotificationsFail(error, isLoadingMore));
       done();
     });
   };
 };
 
-export function expandNotificationsRequest() {
+export function expandNotificationsRequest(isLoadingMore) {
   return {
     type: NOTIFICATIONS_EXPAND_REQUEST,
+    skipLoading: !isLoadingMore,
   };
 };
 
-export function expandNotificationsSuccess(notifications, next) {
+export function expandNotificationsSuccess(notifications, next, isLoadingMore) {
   return {
     type: NOTIFICATIONS_EXPAND_SUCCESS,
     notifications,
     next,
+    skipLoading: !isLoadingMore,
   };
 };
 
-export function expandNotificationsFail(error) {
+export function expandNotificationsFail(error, isLoadingMore) {
   return {
     type: NOTIFICATIONS_EXPAND_FAIL,
     error,
+    skipLoading: !isLoadingMore,
   };
 };
 
