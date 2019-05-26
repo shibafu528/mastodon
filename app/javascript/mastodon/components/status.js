@@ -17,6 +17,7 @@ import { HotKeys } from 'react-hotkeys';
 import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import PollContainer from 'mastodon/containers/poll_container';
+import { displayMedia } from '../initial_state';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
@@ -85,6 +86,10 @@ class Status extends ImmutablePureComponent {
     'hidden',
   ];
 
+  state = {
+    showMedia: displayMedia !== 'hide_all' && !this.props.status.get('sensitive') || displayMedia === 'show_all',
+  };
+
   // Track height changes we know about to compensate scrolling
   componentDidMount () {
     this.didShowCard = !this.props.muted && !this.props.hidden && this.props.status && this.props.status.get('card');
@@ -120,6 +125,10 @@ class Status extends ImmutablePureComponent {
         });
       }
     }
+  }
+
+  handleToggleMediaVisibility = () => {
+    this.setState({ showMedia: !this.state.showMedia });
   }
 
   handleClick = () => {
@@ -198,6 +207,10 @@ class Status extends ImmutablePureComponent {
     this.props.onToggleHidden(this._properStatus());
   }
 
+  handleHotkeyToggleSensitive = () => {
+    this.handleToggleMediaVisibility();
+  }
+
   _properStatus () {
     const { status } = this.props;
 
@@ -272,9 +285,9 @@ class Status extends ImmutablePureComponent {
     }
 
     if (status.get('poll')) {
-      media = <PollContainer pollId={status.get('poll')} />;
+      media = <PollContainer pollId={status.get('poll')} visible={!status.get('hidden')} />;
     } else if (status.get('media_attachments').size > 0) {
-      if (this.props.muted || status.get('media_attachments').some(item => item.get('type') === 'unknown')) {
+      if (this.props.muted) {
         media = (
           <AttachmentList
             compact
@@ -289,6 +302,7 @@ class Status extends ImmutablePureComponent {
             {Component => (
               <Component
                 preview={video.get('preview_url')}
+                blurhash={video.get('blurhash')}
                 src={video.get('url')}
                 alt={video.get('description')}
                 width={this.props.cachedMediaWidth}
@@ -297,6 +311,8 @@ class Status extends ImmutablePureComponent {
                 sensitive={status.get('sensitive')}
                 onOpenVideo={this.handleOpenVideo}
                 cacheWidth={this.props.cacheMediaWidth}
+                visible={this.state.showMedia}
+                onToggleVisibility={this.handleToggleMediaVisibility}
               />
             )}
           </Bundle>
@@ -312,6 +328,8 @@ class Status extends ImmutablePureComponent {
                 onOpenMedia={this.props.onOpenMedia}
                 cacheWidth={this.props.cacheMediaWidth}
                 defaultWidth={this.props.cachedMediaWidth}
+                visible={this.state.showMedia}
+                onToggleVisibility={this.handleToggleMediaVisibility}
               />
             )}
           </Bundle>
@@ -347,6 +365,7 @@ class Status extends ImmutablePureComponent {
       moveUp: this.handleHotkeyMoveUp,
       moveDown: this.handleHotkeyMoveDown,
       toggleHidden: this.handleHotkeyToggleHidden,
+      toggleSensitive: this.handleHotkeyToggleSensitive,
     };
 
     return (
@@ -355,6 +374,7 @@ class Status extends ImmutablePureComponent {
           {prepend}
 
           <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted, read: unread === false })} data-id={status.get('id')}>
+            <div className='status__expand' onClick={this.handleClick} role='presentation' />
             <div className='status__info'>
               <a href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener'><RelativeTimestamp timestamp={status.get('created_at')} /></a>
 
