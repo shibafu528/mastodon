@@ -28,6 +28,9 @@ export const NOTIFICATIONS_CLEAR        = 'NOTIFICATIONS_CLEAR';
 export const NOTIFICATIONS_SCROLL_TOP   = 'NOTIFICATIONS_SCROLL_TOP';
 export const NOTIFICATIONS_LOAD_PENDING = 'NOTIFICATIONS_LOAD_PENDING';
 
+export const NOTIFICATIONS_MOUNT   = 'NOTIFICATIONS_MOUNT';
+export const NOTIFICATIONS_UNMOUNT = 'NOTIFICATIONS_UNMOUNT';
+
 defineMessages({
   mention: { id: 'notification.mention', defaultMessage: '{name} mentioned you' },
   group: { id: 'notifications.group', defaultMessage: '{count} notifications' },
@@ -164,7 +167,7 @@ export function expandNotifications({ maxId } = {}, done = noOp) {
       dispatch(importFetchedAccounts(response.data.map(item => item.account)));
       dispatch(importFetchedStatuses(response.data.map(item => item.status).filter(status => !!status)));
 
-      dispatch(expandNotificationsSuccess(response.data, next ? next.uri : null, isLoadingMore, isLoadingRecent && preferPendingItems));
+      dispatch(expandNotificationsSuccess(response.data, next ? next.uri : null, isLoadingMore, isLoadingRecent, isLoadingRecent && preferPendingItems));
       fetchRelatedRelationships(dispatch, response.data);
       done();
     }).catch(error => {
@@ -181,11 +184,12 @@ export function expandNotificationsRequest(isLoadingMore) {
   };
 };
 
-export function expandNotificationsSuccess(notifications, next, isLoadingMore, usePendingItems) {
+export function expandNotificationsSuccess(notifications, next, isLoadingMore, isLoadingRecent, usePendingItems) {
   return {
     type: NOTIFICATIONS_EXPAND_SUCCESS,
     notifications,
     next,
+    isLoadingRecent: isLoadingRecent,
     usePendingItems,
     skipLoading: !isLoadingMore,
   };
@@ -227,3 +231,11 @@ export function setFilter (filterType) {
     dispatch(saveSettings());
   };
 };
+
+export const mountNotifications = () => ({
+  type: NOTIFICATIONS_MOUNT,
+});
+
+export const unmountNotifications = () => ({
+  type: NOTIFICATIONS_UNMOUNT,
+});
