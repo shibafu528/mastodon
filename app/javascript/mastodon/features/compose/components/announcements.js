@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import classnames from 'classnames';
 
-class Announcement extends React.PureComponent {
+class MikutterAnnouncement extends React.PureComponent {
 
   static propTypes = {
     item: ImmutablePropTypes.map,
@@ -16,10 +16,10 @@ class Announcement extends React.PureComponent {
     const { item } = this.props;
 
     const contents = [];
-    contents.push(<div key='body' className='announcements__body'>{item.get('text')}</div>);
+    contents.push(<div key='body' className='mikutter__announcements__body'>{item.get('text')}</div>);
     if (item.get('icon')) {
       contents.push(
-        <div key='icon' className='announcements__icon'>
+        <div key='icon' className='mikutter__announcements__icon'>
           <img src={item.get('icon')} alt='' />
         </div>
       );
@@ -28,8 +28,8 @@ class Announcement extends React.PureComponent {
     const url = item.get('url');
 
     const classname = classnames({
-      'announcements__item': true,
-      'announcements__item--clickable': !!url,
+      'mikutter__announcements__item': true,
+      'mikutter__announcements__item--clickable': !!url,
     });
 
     if (!url) {
@@ -50,7 +50,7 @@ const validTimeout = (items, now) => {
   return Math.min(nextTick, ONE_DAY);
 };
 
-export default class Announcements extends React.PureComponent {
+export default class MikutterAnnouncements extends React.PureComponent {
 
   state = {
     items: Immutable.List(),
@@ -91,9 +91,9 @@ export default class Announcements extends React.PureComponent {
     }
 
     return (
-      <ul className='announcements'>
+      <ul className='mikutter__announcements'>
         <li>
-          <Announcement item={items.get(0)} />
+          <MikutterAnnouncement item={items.get(0)} />
         </li>
       </ul>
     );
