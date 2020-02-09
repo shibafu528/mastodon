@@ -282,7 +282,7 @@ GEM
     http-parser (1.2.1)
       ffi-compiler (>= 1.0, < 2.0)
     http_accept_language (2.1.1)
-    httplog (1.4.0)
+    httplog (1.4.1)
       rack (>= 1.0)
       rainbow (>= 2.0.0)
     i18n (1.8.2)
@@ -441,7 +441,7 @@ GEM
     pundit (2.1.0)
       activesupport (>= 3.0.0)
     raabro (1.1.6)
-    rack (2.0.8)
+    rack (2.1.2)
     rack-attack (6.2.2)
       rack (>= 1.0, < 3)
     rack-cors (1.1.1)
@@ -709,7 +709,7 @@ DEPENDENCIES
   http (~> 4.3)
   http_accept_language (~> 2.1)
   http_parser.rb (~> 0.6)!
-  httplog (~> 1.4)
+  httplog (~> 1.4.1)
   i18n-tasks (~> 0.9)
   idn-ruby
   iso-639
@@ -749,7 +749,7 @@ DEPENDENCIES
   pry-rails (~> 0.3)
   puma (~> 4.3)
   pundit (~> 2.1)
-  rack (= 2.0.8)
+  rack (~> 2.1.2)
   rack-attack (~> 6.2)
   rack-cors (~> 1.1)
   rails (~> 5.2.4)
