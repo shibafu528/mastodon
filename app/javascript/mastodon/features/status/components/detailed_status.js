@@ -48,8 +48,8 @@ export default class DetailedStatus extends ImmutablePureComponent {
     e.stopPropagation();
   }
 
-  handleOpenVideo = (media, startTime) => {
-    this.props.onOpenVideo(media, startTime);
+  handleOpenVideo = (media, options) => {
+    this.props.onOpenVideo(media, options);
   }
 
   handleExpandedToggle = () => {
@@ -153,7 +153,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
         );
       }
     } else if (status.get('spoiler_text').length === 0) {
-      media = <Card onOpenMedia={this.props.onOpenMedia} card={status.get('card', null)} />;
+      media = <Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia} card={status.get('card', null)} />;
     }
 
     if (status.get('application')) {
@@ -166,7 +166,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
       reblogIcon = 'lock';
     }
 
-    if (status.get('visibility') === 'private') {
+    if (['private', 'direct'].includes(status.get('visibility'))) {
       reblogLink = <Icon id={reblogIcon} />;
     } else if (this.context.router) {
       reblogLink = (

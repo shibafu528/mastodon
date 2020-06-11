@@ -7,6 +7,7 @@ import {
   importFetchedStatus,
   importFetchedStatuses,
 } from './importer';
+import { submitMarkers } from './markers';
 import { saveSettings } from './settings';
 import { defineMessages } from 'react-intl';
 import { List as ImmutableList } from 'immutable';
@@ -70,17 +71,19 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
       filtered = regex && regex.test(searchIndex);
     }
 
+    dispatch(submitMarkers());
+
     // 通知の種類毎に音を変更する
     let sound;
     switch (notification.type) {
-      case 'favourite':
-        sound = { sound: 'favourite' };
-        break;
-      case 'reblog':
-        sound = { sound: 'reblog' };
-        break;
-      default:
-        sound = { sound: 'boop' };
+    case 'favourite':
+      sound = { sound: 'favourite' };
+      break;
+    case 'reblog':
+      sound = { sound: 'reblog' };
+      break;
+    default:
+      sound = { sound: 'boop' };
     }
 
     if (showInColumn) {
@@ -170,6 +173,7 @@ export function expandNotifications({ maxId } = {}, done = noOp) {
 
       dispatch(expandNotificationsSuccess(response.data, next ? next.uri : null, isLoadingMore, isLoadingRecent, isLoadingRecent && preferPendingItems));
       fetchRelatedRelationships(dispatch, response.data);
+      dispatch(submitMarkers());
     }).catch(error => {
       dispatch(expandNotificationsFail(error, isLoadingMore));
     }).finally(() => {
