@@ -134,6 +134,7 @@ class User < ApplicationRecord
 
   def disable!
     update!(disabled: true)
+    regret&.destroy!
   end
 
   def enable!
