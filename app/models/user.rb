@@ -118,6 +118,8 @@ class User < ApplicationRecord
   attr_reader :invite_code, :sign_in_token_attempt
   attr_writer :external
 
+  has_one :regret, dependent: :destroy
+
   def confirmed?
     confirmed_at.present?
   end
