@@ -410,7 +410,7 @@ const startServer = async () => {
    */
   const allowCrossDomain = (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Authorization, Accept, Cache-Control');
+    res.header('Access-Control-Allow-Headers', 'Authorization, Accept, Cache-Control, X-Disconnect-After');
     res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
     next();
@@ -435,6 +435,12 @@ const startServer = async () => {
    */
   const setRemoteAddress = (req, res, next) => {
     req.remoteAddress = req.connection.remoteAddress;
+
+    next();
+  };
+
+  const setDisconnectAfter = (req, res, next) => {
+    req.disconnectAfter = req.headers['x-disconnect-after'] | 0;
 
     next();
   };
@@ -993,6 +999,11 @@ const startServer = async () => {
 
     const heartbeat = setInterval(() => res.write(':thump\n'), 15000);
 
+    const heartbreak = req.disconnectAfter > 0 && setInterval(() => {
+      res.write(':X-Disconnect-After reached\n');
+      res.end();
+    }, req.disconnectAfter * 1000);
+
     req.on('close', () => {
       log.verbose(req.requestId, `Ending stream for ${accountId}`);
       // We decrement these counters here instead of in streamHttpEnd as in that
@@ -1004,6 +1015,9 @@ const startServer = async () => {
       }
 
       clearInterval(heartbeat);
+      if (heartbreak) {
+        clearInterval(heartbreak);
+      }
     });
 
     return (event, payload) => {
@@ -1063,6 +1077,7 @@ const startServer = async () => {
 
   api.use(setRequestId);
   api.use(setRemoteAddress);
+  app.use(setDisconnectAfter);
   api.use(allowCrossDomain);
 
   api.use(authenticationMiddleware);
@@ -1390,6 +1405,7 @@ const startServer = async () => {
 
     req.requestId = uuid.v4();
     req.remoteAddress = ws._socket.remoteAddress;
+    req.disconnectAfter = req.headers['x-disconnect-after'] | 0;
 
     ws.isAlive = true;
 
@@ -1408,6 +1424,8 @@ const startServer = async () => {
       subscriptions: {},
     };
 
+    const heartbreak = req.disconnectAfter > 0 && setInterval(() => ws.close(1001, 'X-Disconnect-After reached'), req.disconnectAfter * 1000);
+
     const onEnd = () => {
       const subscriptions = Object.keys(session.subscriptions);
 
@@ -1421,6 +1439,10 @@ const startServer = async () => {
       session.subscriptions = {};
 
       connectedClients.labels({ type: 'websocket' }).dec();
+
+      if (heartbreak) {
+        clearInterval(heartbreak);
+      }
     };
 
     ws.on('close', onEnd);
