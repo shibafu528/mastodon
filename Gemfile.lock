@@ -354,12 +354,17 @@ GEM
       nokogiri (~> 1)
       rake
     mini_mime (1.0.3)
-    mini_portile2 (2.5.1)
+    mini_portile2 (2.5.2)
+      net-ftp (~> 0.1)
     minitest (5.14.4)
     msgpack (1.4.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    net-ftp (0.1.2)
+      net-protocol
+      time
     net-ldap (0.17.0)
+    net-protocol (0.1.0)
     net-scp (3.0.0)
       net-ssh (>= 2.6.5, < 7.0.0)
     net-ssh (6.1.0)
@@ -439,7 +444,7 @@ GEM
       rack (>= 1.0, < 3)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
-    rack-proxy (0.6.5)
+    rack-proxy (0.7.0)
       rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -609,6 +614,7 @@ GEM
     thwait (0.2.0)
       e2mmap
     tilt (2.0.10)
+    time (0.1.0)
     tpm-key_attestation (0.9.0)
       bindata (~> 2.4)
       openssl-signature_algorithm (~> 0.4.0)
@@ -650,7 +656,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    webpacker (5.3.0)
+    webpacker (5.4.0)
       activesupport (>= 5.2)
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
@@ -792,6 +798,6 @@ DEPENDENCIES
   tzinfo-data (~> 1.2021)
   webauthn (~> 3.0.0.alpha1)
   webmock (~> 3.12)
-  webpacker (~> 5.3)
+  webpacker (~> 5.4)
   webpush (~> 0.3)
   xorcist (~> 1.1)
