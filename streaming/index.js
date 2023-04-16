@@ -272,7 +272,7 @@ const startWorker = async (workerId) => {
    */
   const allowCrossDomain = (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Authorization, Accept, Cache-Control');
+    res.header('Access-Control-Allow-Headers', 'Authorization, Accept, Cache-Control, X-Disconnect-After');
     res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
     next();
@@ -297,6 +297,12 @@ const startWorker = async (workerId) => {
    */
   const setRemoteAddress = (req, res, next) => {
     req.remoteAddress = req.connection.remoteAddress;
+
+    next();
+  };
+
+  const setDisconnectAfter = (req, res, next) => {
+    req.disconnectAfter = req.headers['x-disconnect-after'] | 0;
 
     next();
   };
@@ -788,9 +794,17 @@ const startWorker = async (workerId) => {
 
     const heartbeat = setInterval(() => res.write(':thump\n'), 15000);
 
+    const heartbreak = req.disconnectAfter > 0 && setInterval(() => {
+      res.write(':X-Disconnect-After reached\n');
+      res.end();
+    }, req.disconnectAfter * 1000);
+
     req.on('close', () => {
       log.verbose(req.requestId, `Ending stream for ${accountId}`);
       clearInterval(heartbeat);
+      if (heartbreak) {
+        clearInterval(heartbreak);
+      }
     });
 
     return (event, payload) => {
@@ -841,6 +855,7 @@ const startWorker = async (workerId) => {
 
   app.use(setRequestId);
   app.use(setRemoteAddress);
+  app.use(setDisconnectAfter);
   app.use(allowCrossDomain);
 
   app.get('/api/v1/streaming/health', (req, res) => {
@@ -1174,6 +1189,7 @@ const startWorker = async (workerId) => {
 
     req.requestId = uuid.v4();
     req.remoteAddress = ws._socket.remoteAddress;
+    req.disconnectAfter = req.headers['x-disconnect-after'] | 0;
 
     ws.isAlive = true;
 
@@ -1190,6 +1206,8 @@ const startWorker = async (workerId) => {
       subscriptions: {},
     };
 
+    const heartbreak = req.disconnectAfter > 0 && setInterval(() => ws.close(1001, 'X-Disconnect-After reached'), req.disconnectAfter * 1000);
+
     const onEnd = () => {
       const keys = Object.keys(session.subscriptions);
 
@@ -1202,6 +1220,10 @@ const startWorker = async (workerId) => {
 
         stopHeartbeat();
       });
+
+      if (heartbreak) {
+        clearInterval(heartbreak);
+      }
     };
 
     ws.on('close', onEnd);
