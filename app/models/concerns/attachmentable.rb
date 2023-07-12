@@ -32,6 +32,23 @@ module Attachmentable
         obfuscate_file_name(attachment)
         set_file_extension(attachment)
       end
+
+      log_attrs = ->(model) do
+        {
+          id: model.try(:id),
+          status_id: model.try(:status_id),
+          file_name: model.try(:"#{name}_file_name"),
+          content_type: model.try(:"#{name}_content_type"),
+          file_size: model.try(:"#{name}_file_size"),
+          remote_url: model.try(:"#{name}_remote_url") || model.try(:remote_url)
+        }
+      end
+      send(:"before_#{name}_post_process") do
+        logger.info("[#{self.class.name}] before_#{name}_post_process: #{log_attrs.call(self).to_json}")
+      end
+      send(:"after_#{name}_post_process") do
+        logger.info("[#{self.class.name}] after_#{name}_post_process: #{log_attrs.call(self).to_json}")
+      end
     end
   end
 
