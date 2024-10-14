@@ -18,7 +18,7 @@ $gold-star: #ca8f04 !default; // Dark Goldenrod
 $red-bookmark: $warning-red;
 
 // Values from the classic Mastodon UI
-$classic-base-color: hsl(240deg, 16%, 19%);
+$classic-base-color: hsl(240deg, 16%, 22%);
 $classic-primary-color: hsl(240deg, 29%, 70%);
 $classic-secondary-color: hsl(255deg, 25%, 88%);
 $classic-highlight-color: $blurple-500;
@@ -96,16 +96,16 @@ $font-monospace: 'mastodon-font-monospace' !default;
 
 :root {
   --dropdown-border-color: #{lighten($ui-base-color, 4%)};
-  --dropdown-background-color: #{rgba(darken($ui-base-color, 8%), 0.9)};
+  --dropdown-background-color: #{rgba(darken($ui-base-color, 4%), 0.9)};
   --dropdown-shadow: 0 20px 25px -5px #{rgba($base-shadow-color, 0.25)},
     0 8px 10px -6px #{rgba($base-shadow-color, 0.25)};
-  --modal-background-color: #{rgba(darken($ui-base-color, 8%), 0.7)};
+  --modal-background-color: #{rgba(darken($ui-base-color, 4%), 0.7)};
   --modal-background-variant-color: #{rgba($ui-base-color, 0.7)};
   --modal-border-color: #{lighten($ui-base-color, 4%)};
   --background-border-color: #{lighten($ui-base-color, 4%)};
   --background-filter: blur(10px) saturate(180%) contrast(75%) brightness(70%);
-  --background-color: #{darken($ui-base-color, 8%)};
-  --background-color-tint: #{rgba(darken($ui-base-color, 8%), 0.9)};
+  --background-color: #{darken($ui-base-color, 4%)};
+  --background-color-tint: #{rgba(darken($ui-base-color, 4%), 0.9)};
   --surface-background-color: #{darken($ui-base-color, 4%)};
   --surface-variant-background-color: #{$ui-base-color};
   --surface-variant-active-background-color: #{lighten($ui-base-color, 4%)};
