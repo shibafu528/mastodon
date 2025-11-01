@@ -346,6 +346,12 @@ const startServer = async () => {
   const isInScope = (req, necessaryScopes) =>
     req.scopes.some(scope => necessaryScopes.includes(scope));
 
+  const setDisconnectAfter = (req, res, next) => {
+    req.disconnectAfter = req.headers['x-disconnect-after'] | 0;
+
+    next();
+  };
+
   /**
    * @param {string} token
    * @param {any} req
@@ -857,6 +863,11 @@ const startServer = async () => {
 
     const heartbeat = setInterval(() => res.write(':thump\n'), 15000);
 
+    const heartbreak = req.disconnectAfter > 0 && setInterval(() => {
+      res.write(':X-Disconnect-After reached\n');
+      res.end();
+    }, req.disconnectAfter * 1000);
+
     req.on('close', () => {
       req.log.info({ accountId: req.accountId }, `Ending stream`);
 
@@ -869,6 +880,9 @@ const startServer = async () => {
       }
 
       clearInterval(heartbeat);
+      if (heartbreak) {
+        clearInterval(heartbreak);
+      }
     });
 
     return (event, payload) => {
@@ -928,6 +942,7 @@ const startServer = async () => {
 
   app.use(api);
 
+  api.use(setDisconnectAfter);
   api.use(authenticationMiddleware);
   api.use(errorMiddleware);
 
@@ -1251,6 +1266,7 @@ const startServer = async () => {
     ws.on('pong', () => {
       ws.isAlive = true;
     });
+    req.disconnectAfter = req.headers['x-disconnect-after'] | 0;
 
     /**
      * @type {WebSocketSession}
@@ -1262,6 +1278,8 @@ const startServer = async () => {
       subscriptions: {},
     };
 
+    const heartbreak = req.disconnectAfter > 0 && setInterval(() => ws.close(1001, 'X-Disconnect-After reached'), req.disconnectAfter * 1000);
+
     ws.on('close', function onWebsocketClose() {
       const subscriptions = Object.keys(session.subscriptions);
 
@@ -1271,6 +1289,10 @@ const startServer = async () => {
 
       // Decrement the metrics for connected clients:
       metrics.connectedClients.labels({ type: 'websocket' }).dec();
+
+      if (heartbreak) {
+        clearInterval(heartbreak);
+      }
 
       // We need to unassign the session object as to ensure it correctly gets
       // garbage collected, without doing this we could accidentally hold on to
