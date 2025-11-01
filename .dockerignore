@@ -20,6 +20,7 @@ postgres14
 redis
 elasticsearch
 chart
+.git
 .yarn/
 !.yarn/patches
 !.yarn/plugins
