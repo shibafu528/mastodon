@@ -2,6 +2,140 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.4.20] - 2026-06-25
+
+### Security
+
+- Update FFMpeg version used in the container image to fix [CVE-2026-8461](https://github.com/advisories/GHSA-qff7-4q6c-m8h6) (critical severity)
+
+## [4.4.19] - 2026-06-24
+
+### Security
+
+- Fix TLS certificate verification being disabled on setups with `LDAP_TLS_NO_VERIFY=true` ([GHSA-3rhr-8phh-jm86](https://github.com/mastodon/mastodon/security/advisories/GHSA-3rhr-8phh-jm86))
+- Update dependencies
+
+### Fixed
+
+- Fix being unable to unmark media as sensitive when "always mark media as sensitive" is enabled in web UI (#39339 by @matrix07012)
+
+## [4.4.18] - 2026-06-03
+
+### Security
+
+- Fix allowed attribution domains spoofing ([GHSA-rwcw-vq68-g34p](https://github.com/mastodon/mastodon/security/advisories/GHSA-rwcw-vq68-g34p))
+- Fix uncaught exception in message sanitization causing Denial of Service ([GHSA-qrgq-9fx2-vf2r](https://github.com/mastodon/mastodon/security/advisories/GHSA-qrgq-9fx2-vf2r))
+- Update dependencies
+
+### Fixed
+
+- Fix remote statuses with large media descriptions being rejected (#39135 by @ClearlyClaire)
+
+## [4.4.17] - 2026-05-20
+
+### Security
+
+- Fix SSRF protection bypass ([GHSA-crr4-7rm4-8gpw](https://github.com/mastodon/mastodon/security/advisories/GHSA-crr4-7rm4-8gpw), [GHSA-xx55-4rrg-8xg6](https://github.com/mastodon/mastodon/security/advisories/GHSA-xx55-4rrg-8xg6))
+- Fix Linked-Data Signature bypass through JSON-LD graph restructuring features ([GHSA-53m7-2wrh-q839](https://github.com/mastodon/mastodon/security/advisories/GHSA-53m7-2wrh-q839), [GHSA-chgx-jx3p-rf73](https://github.com/mastodon/mastodon/security/advisories/GHSA-chgx-jx3p-rf73))
+- Updated dependencies
+
+### Removed
+
+- Remove unused devise strategies (#38795 by @ClearlyClaire)
+
+## [4.4.16] - 2026-04-15
+
+### Security
+
+- Insufficient verification of email addresses ([GHSA-5r37-qpwq-2jhh](https://github.com/mastodon/mastodon/security/advisories/GHSA-5r37-qpwq-2jhh))
+- Updated dependencies
+
+### Added
+
+- Add trademark warning to `mastodon:setup` task (#38548 by @ClearlyClaire)
+
+### Fixed
+
+- Fix definition for `quote` in JSON-LD context (#38686 by @ClearlyClaire)
+
+## [4.4.15] - 2026-03-24
+
+### Security
+
+- Fix insufficient checks on quote authorizations ([GHSA-q4g8-82c5-9h33](https://github.com/mastodon/mastodon/security/advisories/GHSA-q4g8-82c5-9h33))
+- Fix open redirect in legacy path handler ([GHSA-xqw8-4j56-5hj6](https://github.com/mastodon/mastodon/security/advisories/GHSA-xqw8-4j56-5hj6))
+- Updated dependencies
+
+### Added
+
+- Add for searching already-known private GtS posts (#38057 by @ClearlyClaire)
+
+### Changed
+
+- Change media description length limit for remote media attachments from 1500 to 10000 characters (#37921 by @ClearlyClaire)
+- Change HTTP signatures to skip the `Accept` header (#38132 by @ClearlyClaire)
+
+### Fixed
+
+- Fix some model definitions in `tootctl maintenance fix-duplicates` (#38214 by @ClearlyClaire)
+- Fix overly strict checks for current username on account migration page (#38183 by @mjankowski)
+- Fix OpenStack Swift Keystone token rate limiting (#38145 by @hugogameiro)
+- Fix poll expiration notification being re-triggered on implicit updates (#38078 by @ClearlyClaire)
+- Fix incorrect translation string in webauthn mailers (#38062 by @mjankowski)
+- Fix username availability check being wrongly applied on race conditions (#37975 by @ClearlyClaire)
+- Fix hover card unintentionally being shown in some cases (#38039 and #38112 by @diondiondion)
+- Fix existing posts not being removed from lists when a list member is unfollowed (#38048 by @ClearlyClaire)
+
+## [4.4.14] - 2026-02-24
+
+### Security
+
+- Reject unconfirmed FASPs (#37926 by @oneiros, [GHSA-qgmm-vr4c-ggjg](https://github.com/mastodon/mastodon/security/advisories/GHSA-qgmm-vr4c-ggjg))
+- Re-use custom socket class for FASP requests (#37925 by @oneiros, [GHSA-46w6-g98f-wxqm](https://github.com/mastodon/mastodon/security/advisories/GHSA-46w6-g98f-wxqm))
+
+### Added
+
+- Add `--suspended-only` option to `tootctl emoji purge` (#37828 and #37861 by @ClearlyClaire and @mjankowski)
+
+### Fixed
+
+- Fix custom emojis not being purged on domain suspension (#37808 by @ClearlyClaire)
+- Fix processing of object updates with duplicate hashtags (#37756 by @ClearlyClaire)
+
+## [4.4.13] - 2026-02-03
+
+### Security
+
+- Fix ActivityPub collection caching logic for pinned posts and featured tags not checking blocked accounts ([GHSA-ccpr-m53r-mfwr](https://github.com/mastodon/mastodon/security/advisories/GHSA-ccpr-m53r-mfwr))
+
+### Fixed
+
+- Fix relationship cache not being cleared when handling account migrations (#37664 by @ClearlyClaire)
+- Fix error when encountering invalid tag in updated object (#37635 by @ClearlyClaire)
+- Fix recycled connections not being immediately closed (#37335 and #37674 by @ClearlyClaire and @shleeable)
+
+## [4.4.12] - 2026-01-20
+
+### Security
+
+- Fix missing limits on various federated properties [GHSA-gg8q-rcg7-p79g](https://github.com/mastodon/mastodon/security/advisories/GHSA-gg8q-rcg7-p79g)
+- Fix remote user suspension bypass [GHSA-5h2f-wg8j-xqwp](https://github.com/mastodon/mastodon/security/advisories/GHSA-5h2f-wg8j-xqwp)
+- Fix missing length limits on some user-provided fields [GHSA-6x3w-9g92-gvf3](https://github.com/mastodon/mastodon/security/advisories/GHSA-6x3w-9g92-gvf3)
+- Fix missing access check for push notification settings update [GHSA-f3q8-7vw3-69v4](https://github.com/mastodon/mastodon/security/advisories/GHSA-f3q8-7vw3-69v4)
+
+### Changed
+
+- Skip tombstone creation on deleting from 404 (#37533 by @ClearlyClaire)
+
+### Fixed
+
+- Fix potential duplicate handling of quote accept/reject/delete (#37537 by @ClearlyClaire)
+- Fix `FeedManager#filter_from_home` error when handling a reblog of a deleted status (#37486 by @ClearlyClaire)
+- Fix needlessly complicated SQL query in status batch removal (#37469 by @ClearlyClaire)
+- Fix `Vary` parsing in cache control enforcement (#37426 by @MegaManSec)
+- Fix thread-unsafe ActivityPub activity dispatch (#37423 by @MegaManSec)
+- Fix SignatureParser accepting duplicate parameters in HTTP Signature header (#37375 by @shleeable)
+
 ## [4.4.11] - 2026-01-07
 
 ### Security

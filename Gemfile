@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 ruby '>= 3.2.0', '< 3.5.0'
 
 gem 'propshaft'
-gem 'puma', '~> 6.3'
+gem 'puma', '~> 7.0'
 gem 'rails', '~> 8.0'
 gem 'thor', '~> 1.2'
 
@@ -13,7 +13,7 @@ gem 'haml-rails', '~>2.0'
 gem 'pg', '~> 1.5'
 gem 'pghero'
 
-gem 'aws-sdk-core', '< 3.216.0', require: false # TODO: https://github.com/mastodon/mastodon/pull/34173#issuecomment-2733378873
+gem 'aws-sdk-core', require: false
 gem 'aws-sdk-s3', '~> 1.123', require: false
 gem 'blurhash', '~> 0.1'
 gem 'fog-core', '<= 2.6.0'
@@ -28,7 +28,7 @@ gem 'bootsnap', '~> 1.18.0', require: false
 gem 'browser'
 gem 'charlock_holmes', '~> 0.7.7'
 gem 'chewy', '~> 7.3'
-gem 'devise', '~> 4.9'
+gem 'devise'
 gem 'devise-two-factor'
 
 group :pam_authentication, optional: true do
